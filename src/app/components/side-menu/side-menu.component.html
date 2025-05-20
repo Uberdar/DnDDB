@@ -1,0 +1,57 @@
+<!-- side-menu.component.html -->
+<aside class="sidebar" [class.collapsed]="isCollapsed">
+  <div class="toggle-button" (click)="toggleSidebar()">
+    <span class="material-icons">
+      @if (isCollapsed) {
+        chevron_right
+      } @else {
+        chevron_left
+      }
+    </span>
+  </div>
+  
+  <div class="sidebar-content">
+    <div class="sidebar-header">
+      @if (!isCollapsed) {
+        <h3>User Menu</h3>
+      }
+    </div>
+    
+    <nav class="sidebar-nav">
+      <ul>
+        <li>
+          <a href="#" class="sidebar-link">
+            <span class="material-icons">collections</span>
+            @if (!isCollapsed) {
+              <span class="link-text">My Collections</span>
+            }
+          </a>
+        </li>
+        <li>
+          <a href="#" class="sidebar-link">
+            <span class="material-icons">favorite</span>
+            @if (!isCollapsed) {
+              <span class="link-text">Favorites</span>
+            }
+          </a>
+        </li>
+        <li>
+          <a href="#" class="sidebar-link">
+            <span class="material-icons">group</span>
+            @if (!isCollapsed) {
+              <span class="link-text">Shared With Me</span>
+            }
+          </a>
+        </li>
+        <li>
+          <a href="#" class="sidebar-link">
+            <span class="material-icons">settings</span>
+            @if (!isCollapsed) {
+              <span class="link-text">Settings</span>
+            }
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>

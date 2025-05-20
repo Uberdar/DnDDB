@@ -1,0 +1,45 @@
+/* src/app/components/side-menu/side-menu.component.scss */
+.sidebar {
+  width: 250px;
+  background-color: #34495e;
+  color: white;
+  transition: width 0.3s ease;
+  position: fixed; /* Change from relative to fixed */
+  height: 100vh; /* Full viewport height */
+  top: 60px; /* Adjust based on your header height */
+  left: 0;
+  z-index: 100; /* Ensure it stays above other content */
+  
+  &.collapsed {
+    width: 60px;
+  }
+}
+
+.toggle-button {
+  position: absolute;
+  top: 20px;
+  right: -15px;
+  background-color: #3498db;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 110; /* Higher than the sidebar */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  &:hover {
+    background-color: #2980b9;
+  }
+}
+
+.sidebar-content {
+  padding: 20px 0;
+  height: calc(100vh - 60px); /* Full height minus header */
+  overflow-y: auto; /* Allow scrolling if menu items don't fit */
+}
+
+/* Rest of the styles remain the same */

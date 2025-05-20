@@ -1,0 +1,60 @@
+<!-- main-content.component.html -->
+<div class="main-content-container">
+  <div class="home-content">
+    <div class="hero-section">
+      <h1>Welcome to DnD DB</h1>
+      <p>Your Pinterest-like platform for Dungeons & Dragons inspiration</p>
+      
+      <!-- Debug info (only visible during development) -->
+      @if (debugInfo) {
+        <div class="debug-info">
+          <p><small>Using fallback: {{ usingFallback ? 'Yes' : 'No' }}</small></p>
+          <p><small>{{ debugInfo }}</small></p>
+        </div>
+      }
+    </div>
+    
+    <div class="pin-container">
+      @for (item of displayedItems; track item.id) {
+        <div class="pin-card">
+          <div class="image-container">
+            <img 
+              [src]="item.imageUrl" 
+              [alt]="item.title" 
+              class="pin-image"
+              loading="lazy"
+              onerror="this.onerror=null; this.classList.add('image-error'); this.parentElement.querySelector('.fallback-text').style.display='flex';"
+            />
+            <div class="fallback-text" [style.backgroundColor]="getCategoryColor(item.category)" [style.display]="'none'">
+              {{ item.category }}
+            </div>
+          </div>
+          <div class="card-content">
+            <h4>{{ item.title }}</h4>
+            <p>{{ item.description }}</p>
+            <div class="tags">
+              @for (tag of item.tags; track tag) {
+                <span class="tag">#{{ tag }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+    
+    @if (loading) {
+      <div class="loading-indicator">
+        <div class="spinner"></div>
+        <p>Loading more content...</p>
+      </div>
+    }
+    
+    @if (allLoaded) {
+      <div class="all-loaded-message">
+        <p>All content loaded!</p>
+      </div>
+    }
+  </div>
+  
+  <router-outlet></router-outlet>
+</div>
