@@ -22,14 +22,8 @@ export class PinService {
   // Track which items have been generated
   private generatedIds: Set<number> = new Set();
   
-  // Picsum photo IDs that look fantasy-themed
-  private readonly FANTASY_PHOTO_IDS = [
-    '1060', '1082', '110', '119', '129', '137', '158', '167', '175', '195', 
-    '204', '211', '219', '237', '24', '244', '256', '27', '279', '287', 
-    '301', '306', '314', '329', '346', '386', '397', '428', '429', '445', 
-    '452', '464', '473', '497', '54', '579', '59', '65', '652', '716', 
-    '784', '810', '823', '838', '87', '96', '986'
-  ];
+  // Track used image URLs to avoid duplicates
+  private usedImageUrls: Set<string> = new Set();
   
   constructor(private http: HttpClient) {
     console.log('PinService constructor called');
@@ -57,38 +51,83 @@ export class PinService {
   }
   
   /**
-   * Get a random image URL for a specific category
+   * Get a completely random image URL
+   * Using a different approach for each request to ensure randomness
    */
-  getRandomImageUrl(category: string): string {
-    // Try to get from cache first
+  getRandomImageUrl(category: string, pinId?: number): string {
+    // Use cache first if available
     if (this.imageCache[category] && this.imageCache[category].length > 0) {
-      const randomIndex = Math.floor(Math.random() * this.imageCache[category].length);
-      return this.imageCache[category][randomIndex];
+      // Randomly select from cache but avoid duplicates if possible
+      let availableImages = this.imageCache[category].filter(url => !this.usedImageUrls.has(url));
+      
+      // If all are used, generate a new random one instead of using cache
+      if (availableImages.length > 0) {
+        const randomIndex = Math.floor(Math.random() * availableImages.length);
+        const url = availableImages[randomIndex];
+        this.usedImageUrls.add(url);
+        return url;
+      }
     }
     
-    // Fallback: generate a deterministic but random-looking URL
-    if (category === 'Spells') {
-      // Colorful abstract for spells
-      return `https://picsum.photos/id/${this.getRandomPhotoId()}/400/400`;
-    } else if (category === 'Characters') {
-      // Character portraits
-      return `https://picsum.photos/id/${this.getRandomPhotoId()}/400/400`;
-    } else if (category === 'Locations') {
-      // Landscape oriented for locations
-      return `https://picsum.photos/id/${this.getRandomPhotoId()}/400/300`;
+    // Generate a completely random image URL
+    return this.generateRandomImageUrl(category, pinId);
+  }
+  
+  /**
+   * Generate a completely random image URL
+   */
+  private generateRandomImageUrl(category: string, pinId?: number): string {
+    // Create random dimensions for more variety
+    let width, height;
+    
+    // Different dimensions based on category for visual variety
+    if (category === 'Locations') {
+      // Landscape format for locations
+      width = this.getRandomInt(350, 600);
+      height = this.getRandomInt(200, 350);
     } else if (category === 'Maps') {
-      // Square format for maps
-      return `https://picsum.photos/id/${this.getRandomPhotoId()}/400/400`;
+      // More square format for maps
+      width = this.getRandomInt(350, 500);
+      height = this.getRandomInt(350, 500);
     } else if (category === 'Items') {
-      // Items are smaller
-      return `https://picsum.photos/id/${this.getRandomPhotoId()}/400/400`;
-    } else if (category === 'Monsters') {
-      // Monsters tend to be darker
-      return `https://picsum.photos/id/${this.getRandomPhotoId()}/400/400`;
+      // Smaller for items
+      width = this.getRandomInt(300, 400);
+      height = this.getRandomInt(300, 400);
     } else {
-      // Default image
-      return `https://picsum.photos/id/${this.getRandomPhotoId()}/400/400`;
+      // Default size for other categories
+      width = this.getRandomInt(300, 500);
+      height = this.getRandomInt(300, 500);
     }
+    
+    // Use one of these approaches for random images:
+    
+    // Approach 1: Completely random image (no ID)
+    // const url = `https://picsum.photos/${width}/${height}?random=${Math.random()}`;
+    
+    // Approach 2: Random seeded by pin ID to make it reproducible but still random
+    // const seed = pinId ? pinId : Math.floor(Math.random() * 1000);
+    // const url = `https://picsum.photos/seed/${seed}/${width}/${height}`;
+    
+    // Approach 3: Random ID from the entire Picsum library (over 1000 images)
+    const randomId = this.getRandomInt(1, 1084); // Picsum has photos numbered approximately up to 1084
+    const url = `https://picsum.photos/id/${randomId}/${width}/${height}`;
+    
+    // Check if this exact URL has been used
+    if (this.usedImageUrls.has(url)) {
+      // If duplicate, try again with different parameters
+      return this.generateRandomImageUrl(category, pinId);
+    }
+    
+    // Track this URL to avoid duplicates
+    this.usedImageUrls.add(url);
+    return url;
+  }
+  
+  /**
+   * Generate a random integer between min and max (inclusive)
+   */
+  private getRandomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   
   /**
@@ -102,23 +141,12 @@ export class PinService {
     categories.forEach(category => {
       this.imageCache[category] = [];
       
-      // Add a few deterministic but varied URLs to the cache
-      for (let i = 0; i < 5; i++) {
-        this.imageCache[category].push(
-          `https://picsum.photos/id/${this.getRandomPhotoId(i)}/400/400`
-        );
+      // Add several random URLs to the cache
+      for (let i = 0; i < 10; i++) {
+        const url = this.generateRandomImageUrl(category);
+        this.imageCache[category].push(url);
       }
     });
-  }
-  
-  /**
-   * Get a random fantasy-themed photo ID from Picsum
-   */
-  private getRandomPhotoId(seed?: number): string {
-    const index = seed !== undefined ? 
-      seed % this.FANTASY_PHOTO_IDS.length : 
-      Math.floor(Math.random() * this.FANTASY_PHOTO_IDS.length);
-    return this.FANTASY_PHOTO_IDS[index];
   }
   
   /**
@@ -129,8 +157,8 @@ export class PinService {
     const categoryIndex = (id - 1) % categories.length;
     const category = categories[categoryIndex];
     
-    // Select a random description for variety
-    const descIndex = Math.floor(Math.random() * category.descriptions.length);
+    // Use ID to deterministically select a description
+    const descIndex = id % category.descriptions.length;
     
     // Create tags
     const tags = ['DnD', 'Fantasy'];
@@ -139,13 +167,15 @@ export class PinService {
     // Add some variety
     if (id % 3 === 0) tags.push('RPG');
     if (id % 4 === 0) tags.push('Tabletop');
+    if (id % 5 === 0) tags.push('Adventure');
+    if (id % 6 === 0) tags.push('Campaign');
     
     return {
       id: id,
       title: `DnD ${category.name.slice(0, -1)} #${id}`,
       category: category.name,
       description: category.descriptions[descIndex],
-      imageUrl: this.getRandomImageUrl(category.name),
+      imageUrl: this.getRandomImageUrl(category.name, id),
       tags: tags
     };
   }
@@ -180,8 +210,8 @@ export class PinService {
         continue; // Skip if category not found
       }
       
-      // Select a random description for variety
-      const descIndex = Math.floor(Math.random() * category.descriptions.length);
+      // Use ID to deterministically select a description
+      const descIndex = currentId % category.descriptions.length;
       
       // Create tags
       const tags = ['DnD', 'Fantasy'];
@@ -190,6 +220,8 @@ export class PinService {
       // Add some variety
       if (currentId % 3 === 0) tags.push('RPG');
       if (currentId % 4 === 0) tags.push('Tabletop');
+      if (currentId % 5 === 0) tags.push('Adventure');
+      if (currentId % 6 === 0) tags.push('Campaign');
       
       // Create the pin
       const pin: Pin = {
@@ -197,7 +229,7 @@ export class PinService {
         title: `DnD ${category.name.slice(0, -1)} #${currentId}`,
         category: category.name,
         description: category.descriptions[descIndex],
-        imageUrl: this.getRandomImageUrl(category.name),
+        imageUrl: this.getRandomImageUrl(category.name, currentId),
         tags: tags
       };
       
