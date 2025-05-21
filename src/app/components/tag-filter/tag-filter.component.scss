@@ -1,0 +1,96 @@
+// src/app/components/tag-filter/tag-filter.component.scss
+/* tag-filter.component.scss */
+.tag-filter-container {
+  padding: 16px;
+  width: 100%;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+
+
+  .section-title {
+    font-size: 16px;
+    color: #ecf0f1;
+    margin: 0 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #465c6f;
+  }
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  
+  .no-tags-message {
+    color: #95a5a6;
+    font-size: 13px;
+    font-style: italic;
+    margin: 0;
+  }
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  .tag-text {
+    white-space: nowrap;
+  }
+}
+
+.available-tag {
+  background-color: #3498db;
+  color: white;
+  
+  &:hover {
+    background-color: #2980b9;
+  }
+}
+
+.filtered-tag {
+  background-color: #2ecc71;
+  color: white;
+  padding-right: 4px;
+  
+  .remove-tag-button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .material-icons {
+      font-size: 14px;
+    }
+    
+    &:hover {
+      color: #e74c3c;
+    }
+  }
+}
+
+.clear-all-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: #c0392b;
+  }
+}

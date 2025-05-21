@@ -22,8 +22,14 @@ import { FooterComponent } from './components/footer/footer.component';
 export class AppComponent {
   title = 'DnDDB';
   sidebarCollapsed = false;
+  activeTagFilters: string[] = [];
 
   onSidebarCollapsedChange(isCollapsed: boolean) {
     this.sidebarCollapsed = isCollapsed;
+  }
+  
+  onTagFilterChange(tags: string[]) {
+    console.log('Tag filters changed:', tags);
+    this.activeTagFilters = tags;
   }
 }

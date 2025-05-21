@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 export interface Pin {
   id: number;
@@ -243,6 +244,21 @@ export class PinService {
     
     return result;
   }
+
+  getAllUniqueTags(): Observable<string[]> {
+  // In a real app, this would call an API to get all unique tags
+  // For now, we'll generate a static list of tags based on our mock data
+  
+  // Create an array of all possible tags used in our mock data generator
+  const allTags = ['DnD', 'Fantasy', 'RPG', 'Tabletop', 'Adventure', 'Campaign', 
+    'Spells', 'Locations', 'Items', 'Characters', 'Maps', 'Monsters', 
+    'Magic', 'Weapons', 'Armor', 'NPCs', 'Quests', 'Dungeons'];
+  
+  // Simulate an API call
+  return of(allTags).pipe(
+    delay(300) // Add a small delay to simulate network request
+  );
+}
   
   /**
    * Get category data

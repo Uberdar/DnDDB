@@ -3,8 +3,11 @@
   <app-header></app-header>
   
   <div class="main-container">
-    <app-side-menu (collapsedChange)="onSidebarCollapsedChange($event)"></app-side-menu>
-    <app-main-content></app-main-content>
+    <app-side-menu 
+      (collapsedChange)="onSidebarCollapsedChange($event)"
+      (tagFilterChange)="onTagFilterChange($event)">
+    </app-side-menu>
+    <app-main-content [tagFilters]="activeTagFilters"></app-main-content>
   </div>
   
   <app-footer></app-footer>

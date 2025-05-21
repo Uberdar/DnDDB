@@ -53,5 +53,13 @@
         </li>
       </ul>
     </nav>
+    
+    <!-- Tag Filter Component -->
+    @if (!isCollapsed) {
+      <div class="filter-container">
+        <h3 class="filter-title">Filter Content</h3>
+        <app-tag-filter (filterChange)="onFilterChange($event)"></app-tag-filter>
+      </div>
+    }
   </div>
 </aside>

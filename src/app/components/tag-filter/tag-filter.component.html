@@ -1,0 +1,36 @@
+<!-- tag-filter.component.html -->
+<div class="tag-filter-container">
+  <div class="filter-section">
+    <h3 class="section-title">Filtered Tags</h3>
+    <div class="tag-list filtered-tags">
+      @if (filteredTags.length === 0) {
+        <p class="no-tags-message">No filters selected</p>
+      } @else {
+        @for (tag of filteredTags; track tag) {
+          <div class="tag filtered-tag">
+            <span class="tag-text">#{{ tag }}</span>
+            <button class="remove-tag-button" (click)="removeTagFromFilter(tag)">
+              <span class="material-icons">close</span>
+            </button>
+          </div>
+        }
+        <button class="clear-all-button" (click)="clearAllFilters()">Clear All</button>
+      }
+    </div>
+  </div>
+  
+  <div class="filter-section">
+    <h3 class="section-title">Available Tags</h3>
+    <div class="tag-list available-tags">
+      @if (availableTags.length === 0) {
+        <p class="no-tags-message">No tags available</p>
+      } @else {
+        @for (tag of availableTags; track tag) {
+          <div class="tag available-tag" (click)="addTagToFilter(tag)">
+            <span class="tag-text">#{{ tag }}</span>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>

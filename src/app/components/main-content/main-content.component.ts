@@ -1,5 +1,8 @@
 // src/app/components/main-content/main-content.component.ts
-import { Component, OnInit, HostListener, AfterViewInit, PLATFORM_ID, Inject } from '@angular/core';
+// Update the component class with input property and filtering logic
+
+// Add the Input decorator import
+import { Component, OnInit, HostListener, AfterViewInit, PLATFORM_ID, Inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
@@ -12,9 +15,14 @@ import { PinService, Pin } from '../../core/services/pin.service';
   templateUrl: './main-content.component.html',
   styleUrls: ['./main-content.component.scss']
 })
-export class MainContentComponent implements OnInit, AfterViewInit {
+export class MainContentComponent implements OnInit, AfterViewInit, OnChanges {
+  // Add the Input property for tag filters
+  @Input() tagFilters: string[] = [];
+  
   // Currently displayed items
   displayedItems: Pin[] = [];
+  // All loaded items (before filtering)
+  allLoadedItems: Pin[] = [];
   // Current page for infinite scroll
   page = 0;
   // Items per page
@@ -54,6 +62,32 @@ export class MainContentComponent implements OnInit, AfterViewInit {
       setTimeout(() => {
         this.setupLayout();
       }, 100);
+    }
+  }
+  
+  // Handle changes to input properties
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tagFilters']) {
+      console.log('Tag filters changed:', this.tagFilters);
+      this.applyFilters();
+    }
+  }
+  
+  // Apply tag filters to the loaded items
+  private applyFilters(): void {
+    if (!this.tagFilters || this.tagFilters.length === 0) {
+      // If no filters, show all loaded items
+      this.displayedItems = [...this.allLoadedItems];
+    } else {
+      // Filter items that contain ALL of the selected tags
+      this.displayedItems = this.allLoadedItems.filter(item => {
+        return this.tagFilters.every(tag => item.tags.includes(tag));
+      });
+    }
+    
+    // If we have few items after filtering, load more
+    if (this.displayedItems.length < this.pageSize && !this.allLoaded) {
+      this.loadMoreItems();
     }
   }
   
@@ -109,8 +143,12 @@ export class MainContentComponent implements OnInit, AfterViewInit {
           this.allLoaded = true;
         }
         
-        // Add new pins to displayed items
-        this.displayedItems = [...this.displayedItems, ...pins];
+        // Add new pins to all loaded items
+        this.allLoadedItems = [...this.allLoadedItems, ...pins];
+        
+        // Apply current filters
+        this.applyFilters();
+        
         this.page++;
         this.loading = false;
       },
